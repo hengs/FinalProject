@@ -12,23 +12,6 @@ if(!$_SESSION["Username"]){
 include "creds.php";
 
 
-
-
-
-
-if(isset($_POST['checkout'])){
-	$UpdateQuery = $con->prepare("UPDATE MyRestaurants SET Recommend = 1  WHERE id ='$_POST[checkout]'");               
-	$UpdateQuery->execute();
-	$UpdateQuery->close();
-	echo "Movie has now been checked out.<br/>";
-};
-
-if(isset($_POST['checkin'])){
-	$UpdateQuery1 = $con->prepare("UPDATE MyRestaurants SET Recommend = 0  WHERE id ='$_POST[checkin]'");               
-	$UpdateQuery1->execute();
-	$UpdateQuery1->close();
-	echo "Restaurant has now been checked in.<br/>";
-};
 echo $_SESSION['Username']."'s Restaurant Reveiw Lists";
 
 if(isset($_POST['edit'])) {
@@ -354,36 +337,36 @@ $CatStmt->bind_result($uid, $urestname, $ufoodtype, $urating, $urecommend, $urev
 	echo '<th>Name  </th><th>Type  </th><th>Rating(1-10)  </th><th>Recommend  </th><th>Written By  </th><th>View Review  </th><th>Add To Favorites  </th>';
 	while($CatStmt->fetch()){
 		if($_SESSION['Username']===$uusername && $urecommend===0){
-		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Down</td><td>'.$uusername.'</td>';
-		echo '<form action = "videos.php" method="POST">';
-		echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
+		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Down</td><td>'.$uusername.'</td><td>'.$ureview.'</td>';
+		//echo '<form action = "videos.php" method="POST">';
+		//echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
 		echo '<form action = "videos.php" method="POST">';
 		echo '<td><input type="hidden" name="favorites" value="'.$urestname.'"/><input type="submit" class="btn btn-sm btn-success" value="Add to Your Favorite List" name="favorite1"></td></tr></form>';
 
 		}
 		else if($_SESSION['Username']===$uusername && $urecommend===1){
 
-		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Up</td><td>'.$uusername.'</td>';
-		echo '<form action = "videos.php" method="POST">';
-		echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
+		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Up</td><td>'.$uusername.'</td><td>'.$ureview.'</td>';
+		//echo '<form action = "videos.php" method="POST">';
+		//echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
 		echo '<form action = "videos.php" method="POST">';
 		echo '<td><input type="hidden" name="favorites" value="'.$urestname.'"/><input type="submit" class="btn btn-sm btn-success" value="Add to Your Favorite List" name="favorite1"></td></tr></form>';
 
 	}
 		else if($_SESSION['Username']!=$uusername && $urecommend===0){
 
-		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Down</td><td>'.$uusername.'</td>';
-		echo '<form action = "videos.php" method="POST">';
-		echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
+		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Down</td><td>'.$uusername.'</td><td>'.$ureview.'</td>';
+		//echo '<form action = "videos.php" method="POST">';
+		//echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
 		echo '<form action = "videos.php" method="POST">';
 		echo '<td><input type="hidden" name="favorites" value="'.$urestname.'"/><input type="submit" class="btn btn-sm btn-success" value="Add to Your Favorite List" name="favorite1"></td></tr></form>';
 
 		}
 		else{
 
-		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Up</td><td>'.$uusername.'</td>';
-		echo '<form action = "videos.php" method="POST">';
-		echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
+		echo '<tr><td>'.$urestname.'</td><td>'.$ufoodtype.'</td><td>'.$urating.'</td><td>Thumbs Up</td><td>'.$uusername.'</td><td>'.$ureview.'</td>';
+		//echo '<form action = "videos.php" method="POST">';
+		//echo '<td><input type="hidden" name="read" value="'.$uid.'"/><input type="submit" class="btn btn-sm btn-info" value="Read the Review" name="read1"/></td></form>';
 		echo '<form action = "videos.php" method="POST">';
 		echo '<td><input type="hidden" name="favorites" value="'.$urestname.'"/><input type="submit" class="btn btn-sm btn-success" value="Add to Your Favorite List" name="favorite1"></td></tr></form>';
 
@@ -396,26 +379,6 @@ $CatStmt->close();
 
 
 
-
-if(isset($_POST['read'])){
-	$readReview = "SELECT * FROM MyRestaurants WHERE id='$_POST[read]'";            
-	$read = $con->query($readReview);
-	if($read->num_rows>0){
-		while($row=$read->fetch_assoc()){
-			echo "<hr><div class='well'>";
-			echo '<table class="table table-bordered table-hover table-striped">';
-			echo "<th><tr>Review for ".$row['RestName']."</tr></th>";
-			echo "<tr><td>".$row['Review']."</td></tr>";
-			echo '</table></div>';
-			//echo "add to favorites:";
-			//echo '<form action = "videos.php" method="POST">';
-			//echo "<td><input type='hidden' name='favorites' value=".$row['RestName']."><input type='submit' value='Add to favorites list' name='read11'></td></tr></form>";
-
-		}
-	}
-	$read->close();
-	//echo "Movie has now been checked in.<br/>";
-};
 
 
 ?>
